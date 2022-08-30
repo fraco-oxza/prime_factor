@@ -1,3 +1,4 @@
+use std::env;
 use std::io::Write;
 
 use log::{error, info, trace};
@@ -8,7 +9,10 @@ mod determinist_mt_u128;
 mod probabilistic;
 
 fn main() {
-    pretty_env_logger::init();
+    if env::var("PF_LOG").is_err() {
+        env::set_var("PF_LOG", "trace");
+    }
+    pretty_env_logger::init_custom_env("PF_LOG");
 
     let mut rng = rand::thread_rng();
 
