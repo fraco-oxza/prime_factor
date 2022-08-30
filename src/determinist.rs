@@ -23,24 +23,6 @@ pub fn is_prime(number: u128) -> bool {
     true
 }
 
-pub fn find_prime_factors(mut number: u128) -> Vec<u128> {
-    let mut i = 2;
-    let mut factors = vec![1];
-    while i <= number {
-        if i == number || i * 2 > number {
-            factors.push(number);
-            break;
-        } else if number % i == 0 && is_prime(i) {
-            factors.push(i);
-            number /= i;
-            i = 2;
-            continue;
-        }
-        i += 1;
-    }
-    factors
-}
-
 #[cfg(test)]
 mod prime_tests {
     use super::*;

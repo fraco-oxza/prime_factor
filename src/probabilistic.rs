@@ -1,9 +1,10 @@
+use log::trace;
 use num_bigint::BigUint;
 use num_traits::{One, Zero};
 use rand::rngs::ThreadRng;
 use rand::Rng;
 
-const MAX_TRIES_FERMAT_TEST: usize = 1;
+const MAX_TRIES_FERMAT_TEST: usize = 100;
 
 fn mod_pow(mut base: BigUint, mut exp: BigUint, modulus: BigUint) -> BigUint {
     if modulus == One::one() {
@@ -47,15 +48,15 @@ pub fn find_prime_factors(mut number: u128) -> Vec<u128> {
     let mut rng = rand::thread_rng();
     factors.push(1);
     while i <= number {
-        if changed && is_prime(number, &mut rng) {
-            factors.push(number);
-            break;
-        } else if i == number || i * 2 > number {
+        if (changed && is_prime(number, &mut rng)) || i == number || i * 2 > number {
+            trace!("{}", number);
             factors.push(number);
             break;
         } else if number % i == 0 && is_prime(i, &mut rng) {
+            trace!("{}", i);
             factors.push(i);
             number /= i;
+
             changed = true;
             i = 2;
             continue;
