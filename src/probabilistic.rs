@@ -46,7 +46,6 @@ pub fn find_prime_factors(mut number: u128) -> Vec<u128> {
     let mut changed = true;
     let mut factors = Vec::new();
     let mut rng = rand::thread_rng();
-    factors.push(1);
     while i <= number {
         if (changed && is_prime(number, &mut rng)) || i == number || i * 2 > number {
             trace!("{}", number);

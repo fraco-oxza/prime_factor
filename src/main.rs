@@ -9,10 +9,10 @@ mod determinist_mt_u128;
 mod probabilistic;
 
 fn main() {
-    if env::var("PF_LOG").is_err() {
-        env::set_var("PF_LOG", "trace");
+    if env::var("PRIMES_LOG").is_err() {
+        env::set_var("PRIMES_LOG", "info");
     }
-    pretty_env_logger::init_custom_env("PF_LOG");
+    pretty_env_logger::init_custom_env("PRIMES_LOG");
 
     let mut rng = rand::thread_rng();
 
