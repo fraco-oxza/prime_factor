@@ -1,5 +1,7 @@
 use log::trace;
 use num_bigint::BigUint;
+use num_bigint::RandBigInt;
+use num_bigint::ToBigUint;
 use num_traits::{One, Zero};
 use rand::rngs::ThreadRng;
 use rand::Rng;
@@ -22,15 +24,18 @@ fn mod_pow(mut base: BigUint, mut exp: BigUint, modulus: BigUint) -> BigUint {
     result
 }
 
-fn is_prime(number: u128, rng: &mut ThreadRng) -> bool {
+fn is_prime(number: &BigUint, rng: &mut ThreadRng) -> bool {
     for _ in 0..MAX_TRIES_FERMAT_TEST {
-        if number == 2 || number == 3 || number == 5 {
+        if *number == 2_u8.to_biguint().unwrap()
+            || *number == 3_u8.to_biguint().unwrap()
+            || *number == 5_u8.to_biguint().unwrap()
+        {
             return true;
         }
         let r: u128 = mod_pow(
-            rng.gen_range(2..number).into(),
-            (number - 1).into(),
-            number.into(),
+            rng.gen_biguint_below(&number),
+            number - 1_u8.to_biguint().unwrap(),
+            number.clone(),
         )
         .try_into()
         .unwrap();
@@ -41,27 +46,27 @@ fn is_prime(number: u128, rng: &mut ThreadRng) -> bool {
     true
 }
 
-pub fn find_prime_factors(mut number: u128) -> Vec<u128> {
-    let mut i = 2;
+pub fn find_prime_factors(mut number: BigUint) -> Vec<BigUint> {
+    let mut i = 2_u8.to_biguint().unwrap();
     let mut changed = true;
     let mut factors = Vec::new();
     let mut rng = rand::thread_rng();
-    factors.push(1);
+    factors.push(1_u8.to_biguint().unwrap());
     while i <= number {
-        if (changed && is_prime(number, &mut rng)) || i == number || i * 2 > number {
+        if (changed && is_prime(&number, &mut rng)) || i == number || i < number / 2_u8 {
             trace!("{}", number);
             factors.push(number);
             break;
-        } else if number % i == 0 && is_prime(i, &mut rng) {
+        } else if number % i == Zero::zero() && is_prime(&i, &mut rng) {
             trace!("{}", i);
             factors.push(i);
             number /= i;
 
             changed = true;
-            i = 2;
+            i = 2_u8.to_biguint().unwrap();
             continue;
         }
-        i += 1;
+        i += 1_u8.to_biguint().unwrap();
         changed = false;
     }
     factors

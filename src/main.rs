@@ -1,7 +1,8 @@
-use std::env;
 use std::io::Write;
 
 use log::{error, info, trace};
+use num_bigint::BigUint;
+use num_bigint::ToBigUint;
 use rand::Rng;
 
 mod determinist;
@@ -9,10 +10,7 @@ mod determinist_mt_u128;
 mod probabilistic;
 
 fn main() {
-    if env::var("PF_LOG").is_err() {
-        env::set_var("PF_LOG", "trace");
-    }
-    pretty_env_logger::init_custom_env("PF_LOG");
+    pretty_env_logger::init_custom_env("PRIMES_LOG");
 
     let mut rng = rand::thread_rng();
 
@@ -20,14 +18,15 @@ fn main() {
 
     loop {
         let mut line = String::new();
+
         print!("Introduzca el numero: ");
         std::io::stdout().flush().unwrap();
         std::io::stdin().read_line(&mut line).unwrap();
         line = line.trim().to_string();
-        let i: u128 = if line == "r" {
-            rng.gen::<u64>() as u128
+        let i: BigUint = if line == "r" {
+            rng.gen::<u64>().to_biguint().unwrap()
         } else if line == "lr" {
-            rng.gen()
+            rng.gen::<u128>().to_biguint().unwrap()
         } else {
             line.parse().unwrap_or_else(|error| {
                 eprintln!("Error: {}", error);
@@ -42,7 +41,7 @@ fn main() {
 
         trace!("Checking primes");
 
-        if p.iter().product::<u128>() == i {
+        if p.iter().product::<BigUint>() == i {
             let val = p
                 .iter()
                 .map(|val| find_prime_pool.is_prime(*val))
